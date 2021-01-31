@@ -12,13 +12,16 @@ def create_series(initial, rate, steps):
         ret.append(v)
     return np.array(ret)
 
-def pv(series, rate):
+def pv(series, discount_rate):
     ret = 0.0
     discount = 1.0
     for v in series:
-        discount *= (1.0 - rate)
+        discount *= (1.0 - discount_rate)
         ret += v * discount
     return ret
+
+def pvs(series, discount_rates):
+    return np.array([pv(series, dr) for dr in discount_rates])
 
 def dcf(initial, growth_rates, discount_rates, debt=0.0, cash=0.0, debt_rate=0.0, years=1000):
     df = pd.DataFrame(columns=[str(x) for x in growth_rates], index=[str(x) for x in discount_rates])
@@ -32,8 +35,8 @@ def dcf(initial, growth_rates, discount_rates, debt=0.0, cash=0.0, debt_rate=0.0
                 break
         interest_series = np.array([debt * debt_rate] * years)
         principal_series = np.array([0.0] * (years - 1) + [debt])
-        earnings_pv = np.array([pv(earnings_series, dr) for dr in discount_rates])
-        interest_pv = np.array([pv(interest_series, dr) for dr in discount_rates])
-        principal_pv = np.array([pv(principal_series, dr) for dr in discount_rates])
-        df[str(growth_rate)] = earnings_pv - interest_pv - principal_pv + cash
+        earnings_pvs = pvs(earnings_series, discount_rates)
+        interest_pvs = pvs(interest_series, discount_rates)
+        principal_pvs = pvs(principal_series, discount_rates)
+        df[str(growth_rate)] = earnings_pvs - interest_pvs - principal_pvs + cash
     return df
