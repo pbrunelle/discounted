@@ -20,3 +20,10 @@ To compute specific DCF analyses:
 ```bash
 ./mo.py
 ```
+
+# Glossary
+
+Here's a short list of acronyms I use (and misuse):
+
+- DCF: discounted cash flow
+- PV: present value
