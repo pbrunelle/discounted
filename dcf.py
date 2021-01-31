@@ -24,6 +24,14 @@ def pvs(series, discount_rates):
     return np.array([pv(series, dr) for dr in discount_rates])
 
 def dcf(initial, growth_rates, discount_rates, debt=0.0, cash=0.0, debt_rate=0.0, years=1000):
+    """
+    Naive DCF model.
+
+    It handles debt: interest payments and cash flows are discounted by the
+    same rate.  The company ceases all operations when interest payments >=
+    cash flows.  Debt is discounted as if it were all repaid during the
+    company's last year of operations.
+    """
     df = pd.DataFrame(columns=[str(x) for x in growth_rates], index=[str(x) for x in discount_rates])
     for growth_rate in growth_rates:
         earnings_series = create_series(initial, growth_rate, years+1)[1:]  # exclude the first (known) year
