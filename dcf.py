@@ -23,9 +23,15 @@ def pv(series, rate):
 def dcf(initial, growth_rates, discount_rates, debt=0.0, cash=0.0, debt_rate=0.0, years=1000):
     df = pd.DataFrame(columns=[str(x) for x in growth_rates], index=[str(x) for x in discount_rates])
     for growth_rate in growth_rates:
-        series = create_series(initial, growth_rate, years)
-        series = series[1:]  # the base year is already known!
-        earnings_pv = np.array([pv(series, dr) for dr in discount_rates])
-        interest_payments_pv = np.array([sum(create_series(debt * debt_rate, -dr, years)) for dr in discount_rates])
-        df[str(growth_rate)] = earnings_pv - interest_payments_pv - debt + cash
+        earnings_series = create_series(initial, growth_rate, years+1)[1:]  # exclude the first (known) year
+        # The company goes out of business when yearly debt payments >= earnings
+        for idx in range(years):
+            if debt * debt_rate >= earnings_series[idx]:
+                earnings_series = earnings_series[:idx]
+                years = idx - 1
+                break
+        interest_series = np.array([debt * debt_rate] * years)
+        earnings_pv = np.array([pv(earnings_series, dr) for dr in discount_rates])
+        interest_pv = np.array([pv(interest_series, dr) for dr in discount_rates])
+        df[str(growth_rate)] = earnings_pv - interest_pv - debt + cash
     return df
