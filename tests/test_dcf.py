@@ -2,16 +2,16 @@ import dcf
 import numpy as np
 
 def test_create_series_0_steps():
-    assert dcf.create_series(1.5, 0.03, 0) == []
+    assert dcf.create_series(1.5, 0.03, 0).tolist() == []
 
 def test_create_series_1_steps():
-    assert dcf.create_series(1.5, 0.03, 1) == [1.5]
+    assert dcf.create_series(1.5, 0.03, 1).tolist() == [1.5]
 
 def test_create_series_3_steps_positive_rate():
-    assert dcf.create_series(2.0, 0.5, 3) == [2.0, 3.0, 4.5]
+    assert dcf.create_series(2.0, 0.5, 3).tolist() == [2.0, 3.0, 4.5]
 
 def test_create_series_3_steps_negative_rate():
-    assert dcf.create_series(2.0, -0.1, 3) == [2.0, 1.8, 1.62]
+    assert dcf.create_series(2.0, -0.1, 3).tolist() == [2.0, 1.8, 1.62]
 
 def test_pv_series_0():
     assert dcf.pv([], 0.5) == 0.0
