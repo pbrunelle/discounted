@@ -31,7 +31,9 @@ def dcf(initial, growth_rates, discount_rates, debt=0.0, cash=0.0, debt_rate=0.0
                 years = idx - 1
                 break
         interest_series = np.array([debt * debt_rate] * years)
+        principal_series = np.array([0.0] * (years - 1) + [debt])
         earnings_pv = np.array([pv(earnings_series, dr) for dr in discount_rates])
         interest_pv = np.array([pv(interest_series, dr) for dr in discount_rates])
-        df[str(growth_rate)] = earnings_pv - interest_pv - debt + cash
+        principal_pv = np.array([pv(principal_series, dr) for dr in discount_rates])
+        df[str(growth_rate)] = earnings_pv - interest_pv - principal_pv + cash
     return df
